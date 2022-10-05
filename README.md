@@ -18,11 +18,11 @@ v8.16.0
 ## Installation
 Run the following command to get the latest version package
 ```
-npm install --save date-converter
+npm install --save date-utils-format
 ```
 ### Import the package
 ```
-import converter from '@itsleon/date-converter';
+import converter from 'date-utils-format';
 ```
 ## Usage
 ### Transform Date
@@ -33,10 +33,10 @@ converter.transformDate('2022-10-05', 'YYYY-MM-DD, 'dd/MM/yyyy')
 ### Get Date
 To get the current date you can use the following command. You have the option to choose either ``date``, ``time``, ``datetime`` or ``timestamp``. Examples of all of the following are below.
 ```
-const date = dateconverter.getDate('date', '-');
-const time = dateconverter.getDate('time', ':');
-const datetime = dateconverter.getDate('datetime', '-');
-const timestamp = dateconverter.getDate('timestamp');
+const date = converter.getDate('date', '-');
+const time = converter.getDate('time', ':');
+const datetime = converter.getDate('datetime', '-');
+const timestamp = converter.getDate('timestamp');
 ```
 The result will be the following from ``date``, ``time``, ``datetime`` and then ``timestamp`` in that order.
 ```

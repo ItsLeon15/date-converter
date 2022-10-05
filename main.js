@@ -1,7 +1,7 @@
 'use strict'
 
-function getDate(type, sep, date = Date.now()) {
-    date = new Date(date)
+function getDate(type, sep, date) {
+    date = new Date()
     let characters = [
         '-', '/', ':', ' ', '.', ',', ';', '|', '_', '+', '*', '#',
         '@', '$', '%', '^', '&', '(', ')', '[', ']', '{', '}', '<',
@@ -10,7 +10,8 @@ function getDate(type, sep, date = Date.now()) {
     switch (type) {
         case 'date':
             if (characters.includes(sep)) {
-                return `${date.getDate()}${sep}${date.getMonth() + 1}${sep}${date.getFullYear()}`
+                let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
+                return `${day}${sep}${date.getMonth() + 1}${sep}${date.getFullYear()}`
             } else {
                 throw new Error('Invalid separator')
             }
@@ -22,7 +23,9 @@ function getDate(type, sep, date = Date.now()) {
             }
         case 'datetime':
             if (characters.includes(sep)) {
-                return `${date.getDate()}${sep}${date.getMonth() + 1}${sep}${date.getFullYear()} ${date.getHours()}${sep}${date.getMinutes()}${sep}${date.getSeconds()}`
+                let seconds = date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()
+                let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
+                return `${day}${sep}${date.getMonth() + 1}${sep}${date.getFullYear()} ${date.getHours()}${sep}${date.getMinutes()}${sep}${seconds}`
             } else {
                 throw new Error('Invalid separator')
             }
@@ -45,8 +48,8 @@ function formatDate(date, format) {
     let hours = date.getHours()
     let minutes = date.getMinutes()
     let seconds = date.getSeconds()
-    let milliseconds = date.getMilliseconds()
-    let timestamp = date.getTime()
+    let milliseconds = date.getMilliseconds()    
+    
     let getMonthName = (month) => {
         switch (month) {
             case 1:
@@ -63,8 +66,19 @@ function formatDate(date, format) {
                 return 'June'
             case 7:
                 return 'July'
+            case 8:
+                return 'August'
+            case 9:
+                return 'September'
+            case 10:
+                return 'October'
+            case 11:
+                return 'November'
+            case 12:
+                return 'December'
         }
     }
+
     let getDayName = (day) => {
         switch (day) {
             case 1:
