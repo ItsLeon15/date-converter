@@ -1,5 +1,5 @@
 {
-    "name": "@itsleon/date-converter",
+    "name": "date-utils-format",
     "version": "0.1.1",
     "description": "A simple date converter with format options",
     "keywords": [
