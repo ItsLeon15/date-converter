@@ -1,31 +1,31 @@
 {
     "name": "date-converter",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A simple date converter with format options",
     "keywords": [
-      "date",
-      "converter",
-      "format",
-      "time"
+        "date",
+        "converter",
+        "format",
+        "time"
     ],
     "homepage": "https://github.com/ItsLeon15/date-converter",
     "bugs": {
-      "url": "https://github.com/ItsLeon15/date-converter/issues",
-      "email": "lsdc915@gmail.com"
+        "url": "https://github.com/ItsLeon15/date-converter/issues",
+        "email": "lsdc915@gmail.com"
     },
     "main": "main.js",
     "scripts": {
-      "test": "mocha"
+        "test": "mocha"
     },
     "repository": {
-      "type": "git",
-      "url": "https://github.com/ItsLeon15/date-converter.git"
+        "type": "git",
+        "url": "https://github.com/ItsLeon15/date-converter.git"
     },
     "author": "ItsLeon15",
     "license": "MIT",
     "private": false,
     "engines": {
-      "node": ">=6.0.0"
+        "node": ">=6.0.0"
     },
     "engineStrict": true
 }
