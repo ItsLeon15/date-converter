@@ -124,6 +124,11 @@ function formatDate(date, format) {
         TT: hours < 12 ? 'a' : 'p',
     }
 
+    format = format.replace(/Y/g, 'y')
+        .replace(/D/g, 'd')
+        .replace(/H/g, 'h')
+        .replace(/S/g, 's')
+
     return format.replace(/(y+|M+|d+|h+|m+|s+|t+|T+|ms)/g, (match, key) => {
         return time[key]
     })
@@ -146,6 +151,11 @@ function isLeapYear(year) {
     return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0
 }
 
+/**
+ * 
+ * @param {Date} date 
+ * @returns 
+ */
 function getWeekNumber(date) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         date = formatDate(date, 'yyyy-MM-dd')
@@ -161,11 +171,35 @@ function getWeekNumber(date) {
     return weekNumber
 }
 
-function convertDateTo(date, type) {
+/**
+ * 
+ * @param {String} date A date in any format which include day, month and year.
+ * @param {String} type The type of the data to return (months, days, hours, minutes)
+ * @param {String} format The format of the date ('yyyy-MM-dd' or 'dd/MM/yyyy')
+ * @returns {Number} The date in the specified type (months, days, hours, minutes)
+ * 
+ */
+function convertDateTo(date, type, format) {
     date = new Date(date)
     switch (type) {
         case 'months':
-            return date.getMonth()
+            let monthArr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+            if (format == 'MM-dd-yyyy') {
+                let dateArray = date.toString().slice(4, 15)
+                for (let i = 0; i < monthArr.length; i++) {
+                    if (dateArray.includes(monthArr[i])) {
+                        return `0${i + 1}`
+                    }
+                }
+            } 
+            if (format == 'dd-MM-yyyy') {
+                let dateArray = date.toString().slice(3, 5)
+                for (let i = 0; i < monthArr.length; i++) {
+                    if (dateArray.includes(monthArr[i])) {
+                        return `0${i + 1}`
+                    }
+                }
+            }
         case 'days':
             return date.getDate()
         case 'hours':
