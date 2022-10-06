@@ -1,6 +1,6 @@
 {
     "name": "date-utils-format",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "A simple date converter with format options",
     "keywords": [
         "date",
