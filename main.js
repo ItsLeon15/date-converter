@@ -1,5 +1,12 @@
 'use strict'
 
+/**
+ * 
+ * @param {String} type The type of the date ('date', 'time', 'datetime')
+ * @param {String} sep The separator between the date parts
+ * @param {String} date A date in any format which include day, month and year
+ * @returns {String} The date in the format specified
+ */
 function getDate(type, sep, date) {
     date = new Date()
     let characters = [
@@ -40,6 +47,12 @@ function getDate(type, sep, date) {
     }
 }
 
+/**
+ * 
+ * @param {String} date A date in any format which include day, month and year.
+ * @param {String} format The format of the date ('yyyy-MM-dd' or 'dd/MM/yyyy')
+ * @returns {String} The date in the format specified
+ */
 function formatDate(date, format) {
     date = new Date(date)
     let year = date.getFullYear()
@@ -51,51 +64,13 @@ function formatDate(date, format) {
     let milliseconds = date.getMilliseconds()    
     
     let getMonthName = (month) => {
-        switch (month) {
-            case 1:
-                return 'January'
-            case 2:
-                return 'February'
-            case 3:
-                return 'March'
-            case 4:
-                return 'April'
-            case 5:
-                return 'May'
-            case 6:
-                return 'June'
-            case 7:
-                return 'July'
-            case 8:
-                return 'August'
-            case 9:
-                return 'September'
-            case 10:
-                return 'October'
-            case 11:
-                return 'November'
-            case 12:
-                return 'December'
-        }
+        let months = date.toLocaleString('en-US');
+        return months[month - 1]
     }
 
     let getDayName = (day) => {
-        switch (day) {
-            case 1:
-                return 'Sunday'
-            case 2:
-                return 'Monday'
-            case 3:
-                return 'Tuesday'
-            case 4:
-                return 'Wednesday'
-            case 5:
-                return 'Thursday'
-            case 6:
-                return 'Friday'
-            case 7:
-                return 'Saturday'
-        }
+        let days = date.toLocaleString('en-US');
+        return days[day - 1]
     }
 
     let time = {
@@ -134,27 +109,49 @@ function formatDate(date, format) {
     })
 }
 
+/**
+ * 
+ * @param {String} date A date in any format which include day, month and year
+ * @param {String} format The format of the date ('yyyy-MM-dd' or 'dd/MM/yyyy')
+ * @param {String} newFormat The new format of the date ('yyyy-MM-dd' or 'dd/MM/yyyy')
+ * @returns {String} The date in the new format specified
+ */
 function transformDate(date, format, newFormat) {
     let newDate = formatDate(date, format)
     return formatDate(newDate, newFormat)
 }
 
+/**
+ * 
+ * @param {String} month A month in a string format to check how many days it has
+ * @returns 
+ */
 function getDaysInMonth(month, year) {
     return new Date(year, month, 0).getDate()
 }
 
+/**
+ * 
+ * @param {String} year A year in a string format to check how many days it has if it is a leap year
+ * @returns {Number} The number of days in the year if it is a leap year
+ */
 function getDaysInYear(year) {
     return isLeapYear(year) ? 366 : 365
 }
 
+/**
+ * 
+ * @param {String} year A year in a string format to check if it is a leap year
+ * @returns {Boolean} If the year is a leap year or not
+ */
 function isLeapYear(year) {
     return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0
 }
 
 /**
  * 
- * @param {Date} date 
- * @returns 
+ * @param {String} date A date in any format which include day, month and year 
+ * @returns {Number} The number of week since the beginning of the year
  */
 function getWeekNumber(date) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
