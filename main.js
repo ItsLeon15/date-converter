@@ -3,12 +3,11 @@
 /**
  * 
  * @param {String} type The type of the date ('date', 'time', 'datetime')
- * @param {String} sep The separator between the date parts
- * @param {String} date A date in any format which include day, month and year
+ * @param {String} sep The separator between the date parts '/' or '-'
  * @returns {String} The date in the format specified
  */
-function getDate(type, sep, date) {
-    date = new Date()
+function getDate(type, sep) {
+    let date = new Date()
     let characters = [
         '-', '/', ':', ' ', '.', ',', ';', '|', '_', '+', '*', '#',
         '@', '$', '%', '^', '&', '(', ')', '[', ']', '{', '}', '<',
@@ -37,7 +36,7 @@ function getDate(type, sep, date) {
                 throw new Error('Invalid separator')
             }
         case 'timestamp':
-            return date.getTime()
+            return date.getTime()``
         default:
             if (characters.includes(sep)) {
                 return `${date.getDate()}${sep}${date.getMonth() + 1}${sep}${date.getFullYear()} ${date.getHours()}${sep}${date.getMinutes()}${sep}${date.getSeconds()}`   
@@ -49,64 +48,113 @@ function getDate(type, sep, date) {
 
 /**
  * 
- * @param {String} date A date in any format which include day, month and year.
- * @param {String} format The format of the date ('yyyy-MM-dd' or 'dd/MM/yyyy')
+ * @param {String} date A date in any format which include day, month and year
+ * @param {String} format The format of the date ('yyyy-MM-dd' or 'dd/MM/yyyy') 
+ * @param {String} type The type of the date Date() or String()
  * @returns {String} The date in the format specified
  */
-function formatDate(date, format) {
-    date = new Date(date)
-    let year = date.getFullYear()
-    let month = date.getMonth() + 1
-    let day = date.getDate()
-    let hours = date.getHours()
-    let minutes = date.getMinutes()
-    let seconds = date.getSeconds()
-    let milliseconds = date.getMilliseconds()    
+function formatDate(date, format, type, sep) {
+    if (type === 'String') {
+        if (date == Date()) {
+            throw new Error('Use the Date type instead of String')
+        }
+        if (sep) {
+            var parts = date.split(sep);
+            let test = date.split();
+            let seperator = test[0].replace(parts[0], '').replace(parts[1], '').replace(parts[2], '')
+            seperator = seperator[0]
+
+            var date = new Date(parts[2], parts[1], parts[0]);
+
+            let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
+            let month = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth()
+            let year = date.getFullYear()
+
+            switch (format) {
+                case `yyyy${seperator}MM${seperator}dd`:
+                    return `${year}${sep}${month}${sep}${day}`
+                case `dd${seperator}MM${seperator}yyyy`:
+                    return `${day}${sep}${month}${sep}${year}`
+                case `MM${seperator}dd${seperator}yyyy`:
+                    return `${month}${sep}${day}${sep}${year}`
+                case `yyyy${seperator}dd${seperator}MM`:
+                    return `${year}${sep}${day}${sep}${month}`
+                default:
+                    return `${day}${sep}${month}${sep}${year}`
+            }
+        } else {
+            let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
+            let month = date.getMonth() < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
+            let year = date.getFullYear()
+            switch (format) {
+                case 'yyyy/MM/dd':
+                    return `${year}/${month}/${day}`
+                case 'dd/MM/yyyy':
+                    return `${day}/${month}/${year}`
+                case 'MM/dd/yyyy':
+                    return `${month}/${day}/${year}`
+                case 'yyyy/dd/MM':
+                    return `${year}/${day}/${month}`
+                default:
+                    return `${day}/${month}/${year}`
+            }
+        }
+    } else if (type === 'Date') {
+        date = new Date(date)
     
-    let getMonthName = (month) => {
-        let months = date.toLocaleString('en-US');
-        return months[month - 1]
+        let year = date.getFullYear()
+        let month = date.getMonth() + 1
+        let day = date.getDate()
+        let hours = date.getHours()
+        let minutes = date.getMinutes()
+        let seconds = date.getSeconds()
+        let milliseconds = date.getMilliseconds()    
+        
+        let getMonthName = (month) => {
+            let months = date.toLocaleString('en-US');
+            return months[month - 1]
+        }
+
+        let getDayName = (day) => {
+            let days = date.toLocaleString('en-US');
+            return days[day - 1]
+        }
+
+        let time = {
+            y: year,
+            yy: year.toString().slice(2),
+            yyy: year.toString().slice(1),
+            yyyy: year,
+            M: month,
+            MM: month < 10 ? `0${month}` : month,
+            MMM: getMonthName(month, 'short'),
+            MMMM: getMonthName(month, 'long'),
+            d: day,
+            dd: day < 10 ? `0${day}` : day,
+            ddd: getDayName(day, 'short'),
+            dddd: getDayName(day, 'long'),
+            h: hours,
+            hh: hours < 10 ? `0${hours}` : hours,
+            m: minutes,
+            mm: minutes < 10 ? `0${minutes}` : minutes,
+            s: seconds,
+            ss: seconds < 10 ? `0${seconds}` : seconds,
+            ms: milliseconds,
+            t: hours < 12 ? 'AM' : 'PM',
+            tt: hours < 12 ? 'am' : 'pm',
+            T: hours < 12 ? 'A' : 'P',
+            TT: hours < 12 ? 'a' : 'p',
+        }
+
+        format = format.replace(/Y/g, 'y')
+            .replace(/D/g, 'd')
+            .replace(/H/g, 'h')
+            .replace(/S/g, 's')
+
+        return format.replace(/(y+|M+|d+|h+|m+|s+|t+|T+|ms)/g, (match, key) => {
+            return time[key]
+        })
     }
-
-    let getDayName = (day) => {
-        let days = date.toLocaleString('en-US');
-        return days[day - 1]
-    }
-
-    let time = {
-        y: year,
-        yy: year.toString().slice(2),
-        yyy: year.toString().slice(1),
-        yyyy: year,
-        M: month,
-        MM: month < 10 ? `0${month}` : month,
-        MMM: getMonthName(month, 'short'),
-        MMMM: getMonthName(month, 'long'),
-        d: day,
-        dd: day < 10 ? `0${day}` : day,
-        ddd: getDayName(day, 'short'),
-        dddd: getDayName(day, 'long'),
-        h: hours,
-        hh: hours < 10 ? `0${hours}` : hours,
-        m: minutes,
-        mm: minutes < 10 ? `0${minutes}` : minutes,
-        s: seconds,
-        ss: seconds < 10 ? `0${seconds}` : seconds,
-        ms: milliseconds,
-        t: hours < 12 ? 'AM' : 'PM',
-        tt: hours < 12 ? 'am' : 'pm',
-        T: hours < 12 ? 'A' : 'P',
-        TT: hours < 12 ? 'a' : 'p',
-    }
-
-    format = format.replace(/Y/g, 'y')
-        .replace(/D/g, 'd')
-        .replace(/H/g, 'h')
-        .replace(/S/g, 's')
-
-    return format.replace(/(y+|M+|d+|h+|m+|s+|t+|T+|ms)/g, (match, key) => {
-        return time[key]
-    })
 }
 
 /**
