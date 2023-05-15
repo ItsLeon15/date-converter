@@ -1,6 +1,151 @@
 'use strict'
 
 /**
+ * Finds the difference between two dates in days.
+ * @param {Date} startDate - The start date.
+ * @param {Date} endDate - The end date.
+ * @returns {Number} The difference between the two dates in days.
+ */
+function findDatesOutsideRangeArray(dateArray, startDate, endDate) {
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+
+    const datesOutsideRange = [];
+
+    for (let i = 0; i < dateArray.length; i++) {
+        const date = new Date(dateArray[i]);
+        if (date < startDate || date > endDate) {
+            datesOutsideRange.push(dateArray[i]);
+        }
+    }
+
+    return datesOutsideRange;
+}
+
+/**
+ * Finds any missing dates from a range of dates in an object.
+ * @param {Array} dateArray - An array of objects with a date property [{date: 'yyyy-mm-dd', ...}, {date: 'yyyy-mm-dd', ...}, ...]
+ * @param {String} dateProperty - The name of the date property in the object (default: 'date')
+ * @param {String} dateFormat - The format of the dates in the array (default: 'dd-mm-yyyy')
+ * @returns {Array} An array of missing dates between the range.
+*/
+function findDatesOutsideRangeObject(dateArray, dateProperty = 'date', startDate, endDate, dateFormat = 'dd-mm-yyyy') {
+
+    const formatDate = (date, format) => {
+        const year = new Date(date).getFullYear();
+        let month = (new Date(date).getMonth() + 1).toString().padStart(2, '0');
+        let day = new Date(date).getDate().toString().padStart(2, '0');
+
+        if (format === 'mm-dd-yyyy') {
+            return `${month}-${day}-${year}`;
+        } else if (format === 'dd-mm-yyyy') {
+            return `${day}-${month}-${year}`;
+        } else if (format === 'yyyy-mm-dd') {
+            return `${year}-${month}-${day}`;
+        } else {
+            throw new Error('Invalid date format');
+        }
+    };
+
+    const formattedStartDate = formatDate(startDate, dateFormat);
+    const formattedEndDate = formatDate(endDate, dateFormat);
+
+    const datesOutsideRange = dateArray.filter(obj => {
+        const formattedDate = formatDate(obj[dateProperty], dateFormat);
+        return formattedDate < formattedStartDate || formattedDate > formattedEndDate;
+    });
+
+    return datesOutsideRange;
+}
+
+
+
+
+/**
+ * Finds any missing dates from a range of dates in an array.
+ * @param {Array} dateArray - An array of dates ['yyyy-mm-dd', 'yyyy-mm-dd', ...]
+ * @param {String} dateFormat - The format of the dates in the array (default: 'dd-mm-yyyy')
+ * @returns {Array} An array of missing dates between the range.
+ */
+function findMissingDatesInsideArray(dateArray, dateFormat = 'mm-dd-yyyy') {
+    const startDate = new Date(dateArray[0]);
+    const endDate = new Date(dateArray[dateArray.length - 1]);
+
+    const missingDates = [];
+    let currentDate = new Date(startDate);
+
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+        let day = date.getDate().toString().padStart(2, '0');
+
+        if (dateFormat === 'mm-dd-yyyy') {
+            return `${month}-${day}-${year}`;
+        } else if (dateFormat === 'dd-mm-yyyy') {
+            return `${day}-${month}-${year}`;
+        } else if (dateFormat === 'yyyy-mm-dd') {
+            return `${year}-${month}-${day}`;
+        } else {
+            throw new Error('Invalid date format');
+        }
+    };
+
+    while (currentDate <= endDate) {
+        const formattedDate = formatDate(currentDate);
+
+        if (!dateArray.includes(formattedDate)) {
+            missingDates.push(formattedDate);
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return missingDates;
+}
+
+function findMissingDatesInsideObject(dateArray, dateProperty, dateFormat = 'mm-dd-yyyy') {
+    const startDate = new Date(dateArray[0][dateProperty]);
+    const endDate = new Date(dateArray[dateArray.length - 1][dateProperty]);
+
+    const missingDates = [];
+    let currentDate = new Date(startDate);
+
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+        let day = date.getDate().toString().padStart(2, '0');
+
+        if (dateFormat === 'mm-dd-yyyy') {
+            return `${month}-${day}-${year}`;
+        } else if (dateFormat === 'dd-mm-yyyy') {
+            return `${day}-${month}-${year}`;
+        } else if (dateFormat === 'yyyy-mm-dd') {
+            return `${year}-${month}-${day}`;
+        } else {
+            throw new Error('Invalid date format');
+        }
+    };
+
+    while (currentDate <= endDate) {
+        const formattedDate = formatDate(currentDate);
+
+        const dateExists = dateArray.some((obj) => {
+            const objDate = new Date(obj[dateProperty]);
+            const formattedObjDate = formatDate(objDate);
+            return formattedObjDate === formattedDate;
+        });
+
+        if (!dateExists) {
+            missingDates.push(formattedDate);
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return missingDates;
+}
+
+/**
  * 
  * @param {String} type The type of the date ('date', 'time', 'datetime')
  * @param {String} sep The separator between the date parts '/' or '-'
@@ -11,7 +156,7 @@ function getDate(type, sep) {
     let characters = [
         '-', '/', ':', ' ', '.', ',', ';', '|', '_', '+', '*', '#',
         '@', '$', '%', '^', '&', '(', ')', '[', ']', '{', '}', '<',
-         '>', '?', '`', '~', '=', '!',
+        '>', '?', '`', '~', '=', '!',
     ]
     switch (type) {
         case 'date':
@@ -39,7 +184,7 @@ function getDate(type, sep) {
             return date.getTime()``
         default:
             if (characters.includes(sep)) {
-                return `${date.getDate()}${sep}${date.getMonth() + 1}${sep}${date.getFullYear()} ${date.getHours()}${sep}${date.getMinutes()}${sep}${date.getSeconds()}`   
+                return `${date.getDate()}${sep}${date.getMonth() + 1}${sep}${date.getFullYear()} ${date.getHours()}${sep}${date.getMinutes()}${sep}${date.getSeconds()}`
             } else {
                 throw new Error('Invalid separator')
             }
@@ -101,15 +246,15 @@ function formatDate(date, format, type, sep) {
         }
     } else if (type === 'Date') {
         date = new Date(date)
-    
+
         let year = date.getFullYear()
         let month = date.getMonth() + 1
         let day = date.getDate()
         let hours = date.getHours()
         let minutes = date.getMinutes()
         let seconds = date.getSeconds()
-        let milliseconds = date.getMilliseconds()    
-        
+        let milliseconds = date.getMilliseconds()
+
         let getMonthName = (month) => {
             let months = date.toLocaleString('en-US');
             return months[month - 1]
@@ -228,7 +373,7 @@ function convertDateTo(date, type, format) {
     date = new Date(date)
     switch (type) {
         case 'months':
-            let monthArr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+            let monthArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
             if (format == 'MM-dd-yyyy') {
                 let dateArray = date.toString().slice(4, 15)
                 for (let i = 0; i < monthArr.length; i++) {
@@ -236,7 +381,7 @@ function convertDateTo(date, type, format) {
                         return `0${i + 1}`
                     }
                 }
-            } 
+            }
             if (format == 'dd-MM-yyyy') {
                 let dateArray = date.toString().slice(3, 5)
                 for (let i = 0; i < monthArr.length; i++) {
@@ -263,5 +408,9 @@ module.exports = {
     getDaysInMonth,
     getDaysInYear,
     getWeekNumber,
-    convertDateTo
+    convertDateTo,
+    findMissingDatesInsideArray,
+    findMissingDatesInsideObject,
+    findDatesOutsideRangeArray,
+    findDatesOutsideRangeObject,
 }

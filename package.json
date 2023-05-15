@@ -15,7 +15,8 @@
     },
     "main": "main.js",
     "scripts": {
-        "test": "mocha"
+        "test": "mocha",
+        "publish": "npm publish"
     },
     "repository": {
         "type": "git",
